@@ -10,9 +10,9 @@ terraform {
   }
   backend "remote" {
     organization = "Datasciencetest"
-    
+
     workspaces {
-      name = "api-traefik-kub-2024-DEV"      
-    }    
+      name = "api-traefik-kub-2024-DEV"
+    }
   }
 }

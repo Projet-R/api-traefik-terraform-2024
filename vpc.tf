@@ -38,7 +38,7 @@ resource "aws_subnet" "public_2" {
 
 #création de la resource table route pour notre VPC
 resource "aws_route_table" "vpc_route" {
-  vpc_id = aws_vpc.main.id  
+  vpc_id = aws_vpc.main.id
 }
 
 # Configuration des passerelles NAT pour les sous-réseaux publics

@@ -39,7 +39,7 @@ resource "aws_security_group" "eks_nodes_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["<control-plane-cidr>"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

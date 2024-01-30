@@ -36,6 +36,11 @@ resource "aws_subnet" "public_2" {
   map_public_ip_on_launch = true
 }
 
+#création de la resource table route pour notre VPC
+resource "aws_route_table" "vpc_route" {
+  vpc_id = aws_vpc.main.id  
+}
+
 # Configuration des passerelles NAT pour les sous-réseaux publics
 resource "aws_nat_gateway" "nat1" {
   allocation_id = aws_eip.nat1.id

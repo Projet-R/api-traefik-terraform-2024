@@ -1,10 +1,10 @@
- # Création de la VPC avec un bloc CIDR de 10.0.0.0/16
+# Création de la VPC avec un bloc CIDR de 10.0.0.0/16
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
-    Name        = "fastapi-vpc"
+    Name = "fastapi-vpc"
   }
 }
 
@@ -12,7 +12,7 @@ resource "aws_vpc" "main" {
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name        = "fastapi-igateway"
+    Name = "fastapi-igateway"
   }
 }
 
@@ -22,7 +22,7 @@ resource "aws_subnet" "private_1" {
   cidr_block        = "10.0.3.0/24"
   availability_zone = "eu-west-3a"
   tags = {
-    Name        = "fastapi-private-1"
+    Name = "fastapi-private-1"
   }
 }
 
@@ -31,7 +31,7 @@ resource "aws_subnet" "private_2" {
   cidr_block        = "10.0.4.0/24"
   availability_zone = "eu-west-3b"
   tags = {
-    Name        = "fastapi-private-1"
+    Name = "fastapi-private-1"
   }
 }
 
@@ -42,7 +42,7 @@ resource "aws_subnet" "public_1" {
   availability_zone       = "eu-west-3a"
   map_public_ip_on_launch = true
   tags = {
-    Name        = "fastapi-public-1"
+    Name = "fastapi-public-1"
   }
 }
 
@@ -52,7 +52,7 @@ resource "aws_subnet" "public_2" {
   availability_zone       = "eu-west-3b"
   map_public_ip_on_launch = true
   tags = {
-    Name        = "fastapi-public-2"
+    Name = "fastapi-public-2"
   }
 }
 
@@ -60,7 +60,7 @@ resource "aws_subnet" "public_2" {
 resource "aws_route_table" "public_rtb" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name        = "fastapi-rtb-public"
+    Name = "fastapi-rtb-public"
   }
 }
 
@@ -109,14 +109,14 @@ resource "aws_nat_gateway" "nat_2" {
 resource "aws_route_table" "prive_1_rtb" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name        = "fastapi-rtb-prive-1"
+    Name = "fastapi-rtb-prive-1"
   }
 }
 
 resource "aws_route_table" "prive_2_rtb" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name        = "fastapi-rtb-prive-2"
+    Name = "fastapi-rtb-prive-2"
   }
 }
 

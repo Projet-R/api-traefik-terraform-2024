@@ -54,7 +54,7 @@ permissions:
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: 'Terraform-apply'
     runs-on: ubuntu-latest
     environment: production
 

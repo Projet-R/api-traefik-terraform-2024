@@ -1,6 +1,6 @@
 # Création du cluster EKS avec une configuration VPC
 resource "aws_eks_cluster" "eks" {
-  name     = "eks"
+  name     = "fastapi-eks"
   role_arn = aws_iam_role.eks_cluster.arn
 
   version = "1.27"
@@ -11,17 +11,8 @@ resource "aws_eks_cluster" "eks" {
     subnet_ids = [
       aws_subnet.private_1.id,
       aws_subnet.private_2.id,
-      aws_subnet.public_1.id,
-      aws_subnet.public_2.id
     ]
   }
-}
-
-# Configuration de la passerelle NAT
-resource "aws_route" "private_nat_route" {
-  route_table_id         = aws_route_table.vpc_route.id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat1.id
 }
 
 # Groupes de sécurité pour les nœuds EKS

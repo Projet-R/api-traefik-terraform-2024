@@ -27,7 +27,7 @@ resource "aws_iam_policy_attachment" "eks-node-policy" {
 
 resource "aws_iam_policy_attachment" "eks-cni-policy" {
   name       = "eks-cni-policy"
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSCNIPolicy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   roles      = [aws_iam_role.nodes_general.name]
 }
 

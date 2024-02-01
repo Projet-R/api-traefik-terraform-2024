@@ -3,35 +3,19 @@ resource "aws_eks_cluster" "eks" {
   name     = "fastapi-eks"
   role_arn = aws_iam_role.eks_cluster.arn
 
-  version = "1.27"
+  version = "1.29"
 
   vpc_config {
-    endpoint_public_access  = true
-    endpoint_private_access = false
+    endpoint_public_access  = false
+    endpoint_private_access = true
     subnet_ids = [
       aws_subnet.private_1.id,
       aws_subnet.private_2.id,
     ]
   }
-}
-
-# Groupes de sécurité pour les nœuds EKS
-resource "aws_security_group" "eks_nodes_sg" {
-  vpc_id = aws_vpc.main.id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  depends_on = [
+    aws_iam_policy_attachment.eks_cluster_policy
+  ]
 }
 
 # Configuration du groupe de nœuds EC2 pour le cluster EKS
@@ -56,4 +40,9 @@ resource "aws_eks_node_group" "nodes_general" {
   labels = {
     role = "nodes-general"
   }
+  depends_on = [
+    aws_iam_policy_attachment.eks-node-policy,
+    aws_iam_policy_attachment.eks-cni-policy,
+    aws_iam_policy_attachment.eks-registry-policy,
+  ]
 }

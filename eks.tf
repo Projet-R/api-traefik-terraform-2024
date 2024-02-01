@@ -6,7 +6,7 @@ resource "aws_eks_cluster" "eks" {
   version = "1.29"
 
   vpc_config {
-    endpoint_public_access  = false
+    endpoint_public_access  = true
     endpoint_private_access = true
     subnet_ids = [
       aws_subnet.private_1.id,

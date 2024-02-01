@@ -56,3 +56,11 @@ resource "aws_iam_role" "eks_cluster" {
 }
 POLICY
 }
+
+# Attachement de la politique IAM pour le rôle cluster EKS
+resource "aws_iam_policy_attachment" "eks_cluster_policy" {
+  name       = "eks_cluster_policy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  roles      = [aws_iam_role.eks_cluster.name]
+}
+

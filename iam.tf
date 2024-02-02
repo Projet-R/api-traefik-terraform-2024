@@ -1,9 +1,13 @@
 # OIDC config
-resource "aws_iam_openid_connect_provider" "cluster" {
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = []
-  url             = aws_eks_cluster.eks.identity.0.oidc.0.issuer
+data "tls_certificate" "eks_cluster" {
+  url = aws_eks_cluster.eks.identity.0.oidc.0.issuer
 }
+resource "aws_iam_openid_connect_provider" "eks_cluster" {
+  client_id_list = ["sts.amazonaws.com"]
+  thumbprint_list = concat([data.tls_certificate.eks_cluster.certificates.0.sha1_fingerprint], var.oidc_thumbprint_list)
+  url = aws_eks_cluster.eks_cluster.identity.0.oidc.0.issuer
+}
+
 
 # Configuration du rôle IAM pour les nœuds EC2 du cluster EKS
 resource "aws_iam_role" "nodes_general" {

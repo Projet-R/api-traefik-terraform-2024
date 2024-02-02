@@ -64,17 +64,35 @@ resource "aws_iam_policy_attachment" "eks_cluster_policy" {
   roles      = [aws_iam_role.eks_cluster.name]
 }
 
-# Rôle IAM pour le plugin AWS CSI
-module "ebs_csi_irsa_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+# Configuration du rôle IAM pour l'addon EBS CSI
+resource "aws_iam_role" "eks_ebs_csi" {
+  name = "eks_ebs_csi"
 
-  role_name             = "${var.cluster_name}-ebs-csi"
-  attach_ebs_csi_policy = true
-
-  oidc_providers = {
-    ex = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::203271543287:oidc-provider/oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:aud": "sts.amazonaws.com",
+          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+        }
+      }
     }
-  }
+  ]
+}
+POLICY
+}
+
+# Attachement de la politique IAM pour le rôle cluster EBS CSI
+resource "aws_iam_policy_attachment" "ebs_csi_controller" {
+  name       = "ebs_csi_controller"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+  roles      = [aws_iam_role.eks_ebs_csi.name]
 }

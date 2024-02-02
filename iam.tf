@@ -1,11 +1,12 @@
 # OIDC config
-data "tls_certificate" "eks_cluster" {
-  url = aws_eks_cluster.eks.identity.0.oidc.0.issuer
+data "tls_certificate" "certif_eks" {
+  url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
-resource "aws_iam_openid_connect_provider" "eks_cluster" {
-  client_id_list = ["sts.amazonaws.com"]
-  thumbprint_list = concat([data.tls_certificate.eks_cluster.certificates.0.sha1_fingerprint], var.oidc_thumbprint_list)
-  url = aws_eks_cluster.eks_cluster.identity.0.oidc.0.issuer
+
+resource "aws_iam_openid_connect_provider" "oidc_eks" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.certif_eks.certificates[0].sha1_fingerprint]
+  url             = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
 
 

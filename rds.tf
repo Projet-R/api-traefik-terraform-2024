@@ -15,6 +15,6 @@ resource "aws_db_instance" "rds_main" {
 
 # Création d'un groupe de sous-réseaux pour l'instance RDS
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "my_db_subnet_group"
+  name       = "my_db_2_subnet_group"
   subnet_ids = [aws_subnet.private_1.id, aws_subnet.private_2.id]
 }

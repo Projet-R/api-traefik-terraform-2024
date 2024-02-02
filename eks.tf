@@ -18,6 +18,16 @@ resource "aws_eks_cluster" "eks" {
   ]
 }
 
+# Ajout de l'add-on EBS CSI pour EKS
+resource "aws_eks_addon" "ebs_csi_driver" {
+  cluster_name                = aws_eks_cluster.eks.name
+  addon_name                  = "aws-ebs-csi-driver"
+  service_account_role_arn    = aws_iam_role.eks_ebs_csi.arn
+  depends_on = [
+    aws_iam_policy_attachment.ebs_csi_controller
+  ]
+}
+
 # Configuration du groupe de nœuds EC2 pour le cluster EKS
 resource "aws_eks_node_group" "nodes_general" {
   cluster_name    = aws_eks_cluster.eks.name

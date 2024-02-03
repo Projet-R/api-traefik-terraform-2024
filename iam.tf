@@ -111,9 +111,9 @@ resource "aws_iam_policy_attachment" "ebs_csi_controller" {
 
 # Creation du role avec la policy necessaire pour ALB
 module "lb_role" {
-  source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
 
-  role_name = "role_eks_lb"
+  role_name                              = "role_eks_lb"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
@@ -126,17 +126,17 @@ module "lb_role" {
 
 # creation du service account pour ALB
 resource "kubernetes_service_account" "service-account" {
- metadata {
-     name      = "aws-load-balancer-controller"
-     namespace = "kube-system"
-     labels = {
-     "app.kubernetes.io/name"      = "aws-load-balancer-controller"
-     "app.kubernetes.io/component" = "controller"
-     }
-     annotations = {
-     "eks.amazonaws.com/role-arn"               = module.lb_role.iam_role_arn
-     "eks.amazonaws.com/sts-regional-endpoints" = "true"
-     }
- }
- }
+  metadata {
+    name      = "aws-load-balancer-controller"
+    namespace = "kube-system"
+    labels = {
+      "app.kubernetes.io/name"      = "aws-load-balancer-controller"
+      "app.kubernetes.io/component" = "controller"
+    }
+    annotations = {
+      "eks.amazonaws.com/role-arn"               = module.lb_role.iam_role_arn
+      "eks.amazonaws.com/sts-regional-endpoints" = "true"
+    }
+  }
+}
 

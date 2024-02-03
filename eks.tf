@@ -44,7 +44,7 @@ resource "aws_eks_node_group" "nodes_general" {
     aws_iam_policy_attachment.eks-node-policy,
     aws_iam_policy_attachment.eks-cni-policy,
     aws_iam_policy_attachment.eks-registry-policy,
-    aws_iam_policy_attachment.AWSCertificateManagerRO
+    aws_iam_policy_attachment.eks-acm-ro
   ]
 }
 

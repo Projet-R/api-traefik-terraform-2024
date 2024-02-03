@@ -109,44 +109,34 @@ resource "aws_iam_policy_attachment" "ebs_csi_controller" {
   roles      = [aws_iam_role.eks_ebs_csi.name]
 }
 
-# Configuration de la policy pour l ALB
-resource "aws_iam_policy" "eks_alb_controller" {
-  name        = "eks_alb_controller"
-  path        = "/"
-  description = "Policy for load balancer controller service"
+# Creation du role avec la policy necessaire pour ALB
+module "lb_role" {
+  source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
 
-  policy = file("policies/alb-iam-policy.json")
-}
+  role_name = "role_eks_lb"
+  attach_load_balancer_controller_policy = true
 
-# Configuration du rôle IAM pour l ALB
-resource "aws_iam_role" "eks_alb_controller" {
-  name = "aws-load-balancer-controller"
-
-  assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Federated": "arn:aws:iam::203271543287:oidc-provider/oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD"
-      },
-      "Action": "sts:AssumeRoleWithWebIdentity",
-      "Condition": {
-        "StringEquals": {
-          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:aud": "sts.amazonaws.com",
-          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
-        }
-      }
+  oidc_providers = {
+    main = {
+      provider_arn               = aws_iam_openid_connect_provider.oidc_eks.arn
+      namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
     }
-  ]
-}
-POLICY
+  }
 }
 
-# Attachement de la politique IAM pour le rôle ALB
-resource "aws_iam_policy_attachment" "eks_alb_controller" {
-  name       = "eks_alb_controller"
-  policy_arn = aws_iam_policy.eks_alb_controller.arn
-  roles      = [aws_iam_role.eks_alb_controller.name]
-}
+# creation du service account pour ALB
+resource "kubernetes_service_account" "service-account" {
+ metadata {
+     name      = "aws-load-balancer-controller"
+     namespace = "kube-system"
+     labels = {
+     "app.kubernetes.io/name"      = "aws-load-balancer-controller"
+     "app.kubernetes.io/component" = "controller"
+     }
+     annotations = {
+     "eks.amazonaws.com/role-arn"               = module.lb_role.iam_role_arn
+     "eks.amazonaws.com/sts-regional-endpoints" = "true"
+     }
+ }
+ }
+

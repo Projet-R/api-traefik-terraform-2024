@@ -87,6 +87,10 @@ resource "helm_release" "alb-controller" {
     aws_eks_node_group.nodes_general
   ]
   set {
+    name  = "image.repository"
+    value = "602401143452.dkr.ecr.eu-west-3.amazonaws.com/amazon/aws-load-balancer-controller"
+  }
+  set {
     name  = "serviceAccount.create"
     value = "false"
   }

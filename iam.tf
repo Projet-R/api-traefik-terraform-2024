@@ -49,8 +49,8 @@ resource "aws_iam_policy_attachment" "eks-registry-policy" {
   roles      = [aws_iam_role.nodes_general.name]
 }
 
-resource "aws_iam_policy_attachment" "eks-cluster-acm-ro" {
-  name       = "eks-cluster-acm-ro"
+resource "aws_iam_policy_attachment" "eks-ng-acm-ro" {
+  name       = "eks-ng-acm-ro"
   policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
   roles      = [aws_iam_role.nodes_general.name]
 }
@@ -81,8 +81,8 @@ resource "aws_iam_policy_attachment" "eks-cluster-policy" {
   roles      = [aws_iam_role.eks_cluster.name]
 }
 
-resource "aws_iam_policy_attachment" "eks-acm-ro" {
-  name       = "eks-acm-ro"
+resource "aws_iam_policy_attachment" "eks-clr-acm-ro" {
+  name       = "eks-clr-acm-ro"
   policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
   roles      = [aws_iam_role.eks_cluster.name]
 }

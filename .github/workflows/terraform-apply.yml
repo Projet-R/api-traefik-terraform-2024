@@ -95,5 +95,5 @@ jobs:
     #  run: sleep 60m
     #  shell: bash
 
-    #- name: Terraform Destroy
-    #  run: terraform destroy -auto-approve 
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve 

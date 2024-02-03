@@ -93,7 +93,7 @@ resource "helm_release" "alb-controller" {
 
   set {
     name  = "serviceAccount.name"
-    value = "eks_alb_controller"
+    value = "aws-load-balancer-controller"
   }
   set {
     name  = "clusterName"

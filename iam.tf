@@ -120,7 +120,7 @@ resource "aws_iam_policy" "eks_alb_controller" {
 
 # Configuration du rôle IAM pour l ALB
 resource "aws_iam_role" "eks_alb_controller" {
-  name = "eks_alb_controller"
+  name = "aws-load-balancer-controller"
 
   assume_role_policy = <<POLICY
 {

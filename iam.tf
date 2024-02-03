@@ -49,6 +49,11 @@ resource "aws_iam_policy_attachment" "eks-registry-policy" {
   roles      = [aws_iam_role.nodes_general.name]
 }
 
+resource "aws_iam_role_policy_attachment" "AWSCertificateManagerReadOnly-EKS2" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
+  roles      = [aws_iam_role.nodes_general.name]
+}
+
 # Configuration du rôle IAM pour le cluster EKS
 resource "aws_iam_role" "eks_cluster" {
   name = "eks-cluster"

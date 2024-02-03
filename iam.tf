@@ -49,8 +49,8 @@ resource "aws_iam_policy_attachment" "eks-registry-policy" {
   roles      = [aws_iam_role.nodes_general.name]
 }
 
-resource "aws_iam_policy_attachment" "eks-acm-ro" {
-  name       = "eks-acm-ro"
+resource "aws_iam_policy_attachment" "eks-ng-acm-ro" {
+  name       = "eks-ng-acm-ro"
   policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
   roles      = [aws_iam_role.nodes_general.name]
 }
@@ -75,10 +75,15 @@ resource "aws_iam_role" "eks_cluster" {
 POLICY
 }
 
-# Attachement de la politique IAM pour le rôle cluster EKS
-resource "aws_iam_policy_attachment" "eks_cluster_policy" {
-  name       = "eks_cluster_policy"
+resource "aws_iam_policy_attachment" "eks-cluster-policy" {
+  name       = "eks-cluster-policy"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  roles      = [aws_iam_role.eks_cluster.name]
+}
+
+resource "aws_iam_policy_attachment" "eks-acm-ro" {
+  name       = "eks-acm-ro"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
   roles      = [aws_iam_role.eks_cluster.name]
 }
 

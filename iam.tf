@@ -49,7 +49,7 @@ resource "aws_iam_policy_attachment" "eks-registry-policy" {
   roles      = [aws_iam_role.nodes_general.name]
 }
 
-resource "aws_iam_role_policy_attachment" "AWSCertificateManagerReadOnly-EKS2" {
+resource "aws_iam_policy_attachment" "AWSCertificateManagerRO" {
   policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
   roles      = [aws_iam_role.nodes_general.name]
 }

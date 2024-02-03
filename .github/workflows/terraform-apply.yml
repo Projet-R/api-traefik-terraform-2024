@@ -91,9 +91,9 @@ jobs:
     - name: Terraform Apply
       run: terraform apply -auto-approve -input=false
 
-    - name: Sleep for 1 hour
-      run: sleep 60m
-      shell: bash
+    #- name: Sleep for 1 hour
+    #  run: sleep 60m
+    #  shell: bash
 
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve 
+    #- name: Terraform Destroy
+    #  run: terraform destroy -auto-approve 

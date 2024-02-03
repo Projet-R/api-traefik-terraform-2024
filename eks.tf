@@ -58,3 +58,29 @@ resource "aws_eks_addon" "ebs_csi_driver" {
     aws_eks_node_group.nodes_general
   ]
 }
+
+# Ajout de l'add-on ALB pour EKS
+
+resource "helm_release" "alb-controller" {
+  name       = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-load-balancer-controller"
+  namespace  = "kube-system"
+  depends_on = [
+    aws_iam_policy_attachment.eks_alb_controller,
+    aws_eks_node_group.nodes_general
+  ]
+  set {
+    name  = "serviceAccount.create"
+    value = "false"
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "eks_alb_controller"
+  }
+  set {
+    name  = "clusterName"
+    value = aws_eks_cluster.eks.name
+  }
+}

@@ -15,7 +15,7 @@ resource "aws_eks_cluster" "eks" {
   }
   depends_on = [
     aws_iam_policy_attachment.eks-cluster-policy,
-    aws_iam_policy_attachment.eks-acm-ro
+    aws_iam_policy_attachment.eks-cluster-acm-ro
   ]
 }
 
@@ -45,7 +45,7 @@ resource "aws_eks_node_group" "nodes_general" {
     aws_iam_policy_attachment.eks-node-policy,
     aws_iam_policy_attachment.eks-cni-policy,
     aws_iam_policy_attachment.eks-registry-policy,
-    aws_iam_policy_attachment.eks-ng-acm-ro
+    aws_iam_policy_attachment.eks-acm-ro
   ]
 }
 

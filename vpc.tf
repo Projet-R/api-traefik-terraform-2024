@@ -22,7 +22,8 @@ resource "aws_subnet" "private_1" {
   cidr_block        = "10.0.3.0/24"
   availability_zone = "eu-west-3a"
   tags = {
-    Name = "fastapi-private-1"
+    Name                                = "fastapi-private-1"
+    kubernetes.io / role / internal-elb = 1
   }
 }
 
@@ -31,7 +32,9 @@ resource "aws_subnet" "private_2" {
   cidr_block        = "10.0.4.0/24"
   availability_zone = "eu-west-3b"
   tags = {
-    Name = "fastapi-private-1"
+    Name                                = "fastapi-private-1"
+    kubernetes.io / role / internal-elb = 1
+
   }
 }
 
@@ -42,7 +45,9 @@ resource "aws_subnet" "public_1" {
   availability_zone       = "eu-west-3a"
   map_public_ip_on_launch = true
   tags = {
-    Name = "fastapi-public-1"
+    Name                       = "fastapi-public-1"
+    kubernetes.io / role / elb = 1
+
   }
 }
 
@@ -52,7 +57,9 @@ resource "aws_subnet" "public_2" {
   availability_zone       = "eu-west-3b"
   map_public_ip_on_launch = true
   tags = {
-    Name = "fastapi-public-2"
+    Name                       = "fastapi-public-2"
+    kubernetes.io / role / elb = 1
+
   }
 }
 

@@ -14,7 +14,7 @@ resource "aws_eks_cluster" "eks" {
     ]
   }
   depends_on = [
-    aws_iam_policy_attachment.eks-cluster-policy
+    aws_iam_policy_attachment.eks-cluster-policy,
     aws_iam_policy_attachment.eks-acm-ro
   ]
 }

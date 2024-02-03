@@ -83,7 +83,7 @@ resource "helm_release" "alb-controller" {
   chart      = "aws-load-balancer-controller"
   namespace  = "kube-system"
   depends_on = [
-    aws_iam_policy_attachment.eks_alb_controller,
+    kubernetes_service_account.service-account,
     aws_eks_node_group.nodes_general
   ]
   set {

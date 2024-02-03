@@ -109,3 +109,44 @@ resource "aws_iam_policy_attachment" "ebs_csi_controller" {
   roles      = [aws_iam_role.eks_ebs_csi.name]
 }
 
+# Configuration de la policy pour l ALB
+resource "aws_iam_policy" "eks_alb_controller" {
+  name        = "eks_alb_controller"
+  path        = "/"
+  description = "Policy for load balancer controller service"
+
+  policy = file("policies/alb-iam-policy.json")
+}
+
+# Configuration du rôle IAM pour l ALB
+resource "aws_iam_role" "eks_alb_controller" {
+  name = "eks_alb_controller"
+
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::203271543287:oidc-provider/oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:aud": "sts.amazonaws.com",
+          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+        }
+      }
+    }
+  ]
+}
+POLICY
+}
+
+# Attachement de la politique IAM pour le rôle ALB
+resource "aws_iam_policy_attachment" "eks_alb_controller" {
+  name       = "eks_alb_controller"
+  policy_arn = aws_iam_policy.eks_alb_controller.arn
+  roles      = [aws_iam_role.eks_alb_controller.name]
+}

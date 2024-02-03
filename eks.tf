@@ -81,7 +81,7 @@ provider "helm" {
   }
 }
 
-# Ajout de l'add-on ALB pour EKS
+# Ajout de l'add-on ALB pour EKS via HELM
 
 resource "helm_release" "alb-controller" {
   name       = "aws-load-balancer-controller"

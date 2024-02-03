@@ -87,13 +87,13 @@ resource "aws_iam_role" "eks_ebs_csi" {
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::203271543287:oidc-provider/oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD"
+        "Federated": "arn:aws:iam::203271543287:oidc-provider${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
-          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:aud": "sts.amazonaws.com",
-          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+          "${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}:aud" = "sts.amazonaws.com",
+          "${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
         }
       }
     }

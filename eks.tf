@@ -114,15 +114,20 @@ resource "helm_release" "alb-controller" {
 }
 
 # Création des namespaces
-
 resource "kubernetes_namespace" "dev" {
   metadata {
     name = "dev"
   }
+  depends_on = [
+    aws_eks_cluster.eks
+  ]
 }
 
 resource "kubernetes_namespace" "prod" {
   metadata {
     name = "prod"
   }
+  depends_on = [
+    aws_eks_cluster.eks
+  ]
 }

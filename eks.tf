@@ -112,3 +112,17 @@ resource "helm_release" "alb-controller" {
     value = aws_eks_cluster.eks.name
   }
 }
+
+# Création des namespaces
+
+resource "kubernetes_namespace" "dev" {
+  metadata {
+    name = "dev"
+  }
+}
+
+resource "kubernetes_namespace" "prod" {
+  metadata {
+    name = "prod"
+  }
+}

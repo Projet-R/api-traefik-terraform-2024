@@ -118,7 +118,7 @@ resource "kubernetes_namespace" "dev" {
     name = "dev"
   }
   depends_on = [
-    aws_eks_cluster.eks
+    aws_eks_node_group.nodes_general
   ]
 }
 
@@ -127,7 +127,7 @@ resource "kubernetes_namespace" "prod" {
     name = "prod"
   }
   depends_on = [
-    aws_eks_cluster.eks
+    aws_eks_node_group.nodes_general
   ]
 }
 
@@ -136,6 +136,6 @@ resource "kubernetes_namespace" "monitoring" {
     name = "monitoring"
   }
   depends_on = [
-    aws_eks_cluster.eks
+    aws_eks_node_group.nodes_general
   ]
 }

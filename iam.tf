@@ -1,4 +1,5 @@
 # OIDC config
+
 data "tls_certificate" "certif_eks" {
   url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
@@ -8,7 +9,6 @@ resource "aws_iam_openid_connect_provider" "oidc_eks" {
   thumbprint_list = [data.tls_certificate.certif_eks.certificates[0].sha1_fingerprint]
   url             = data.tls_certificate.certif_eks.url
 }
-
 
 # Configuration du rôle IAM pour les nœuds EC2 du cluster EKS
 resource "aws_iam_role" "nodes_general" {
@@ -92,13 +92,16 @@ resource "aws_iam_role" "eks_ebs_csi" {
     {
       "Effect": "Allow",
       "Principal": {
+        
         "Federated": "arn:aws:iam::203271543287:oidc-provider/${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
+          
           "${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}:aud": "sts.amazonaws.com",
           "${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+
         }
       }
     }
@@ -113,6 +116,7 @@ resource "aws_iam_policy_attachment" "ebs_csi_controller" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   roles      = [aws_iam_role.eks_ebs_csi.name]
 }
+
 
 # Creation du role avec la policy necessaire pour ALB
 module "lb_role" {

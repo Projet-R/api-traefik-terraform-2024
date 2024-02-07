@@ -85,7 +85,7 @@ jobs:
      # Generates an execution plan for Terraform
     - name: terraform state list
       run: |
-        terraform state rm "data.aws_eks_cluster.eks""
+        terraform state rm "data.aws_eks_cluster.eks"
         terraform state rm "data.aws_eks_cluster_auth.eks"
         terraform state rm "aws_eks_cluster.eks"
         terraform state rm "aws_iam_policy_attachment.eks-clr-acm-ro"

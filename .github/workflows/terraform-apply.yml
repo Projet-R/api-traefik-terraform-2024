@@ -85,9 +85,6 @@ jobs:
     # Generates an execution plan for Terraform
     - name: terraform state list
       run: |
-        terraform state rm "kubernetes_namespace.monitoring"
-        terraform state rm "kubernetes_namespace.prod"
-        terraform state rm "kubernetes_service_account.service-account"
         terraform state rm "helm_release.alb-controller"
 
     # Generates an execution plan for Terraform

@@ -6,7 +6,7 @@ data "tls_certificate" "certif_eks" {
 resource "aws_iam_openid_connect_provider" "oidc_eks" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [data.tls_certificate.certif_eks.certificates[0].sha1_fingerprint]
-  url             = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+  url             = data.tls_certificate.certif_eks.url
 }
 
 
@@ -48,12 +48,6 @@ resource "aws_iam_policy_attachment" "eks-registry-policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   roles      = [aws_iam_role.nodes_general.name]
 }
-
-#resource "aws_iam_policy_attachment" "eks-ng-acm-ro" {
-#  name       = "eks-ng-acm-ro"
-#  policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
-#  roles      = [aws_iam_role.nodes_general.name]
-#}
 
 # Configuration du rôle IAM pour le cluster EKS
 resource "aws_iam_role" "eks_cluster" {
@@ -151,3 +145,8 @@ resource "kubernetes_service_account" "service-account" {
   }
 }
 
+resource "aws_iam_policy_attachment" "alb-acm-ro" {
+  name       = "alb-acm-ro"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
+  roles      = [module.lb_role.role_name]
+}

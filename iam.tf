@@ -148,5 +148,5 @@ resource "kubernetes_service_account" "service-account" {
 resource "aws_iam_policy_attachment" "alb-acm-ro" {
   name       = "alb-acm-ro"
   policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
-  roles      = [module.lb_role.role_name]
+  roles      = [module.lb_role.iam_role_name]
 }

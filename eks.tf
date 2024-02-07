@@ -48,34 +48,6 @@ resource "aws_eks_node_group" "nodes_general" {
   ]
 }
 
-# Création des namespaces
-resource "kubernetes_namespace" "dev" {
-  metadata {
-    name = "dev"
-  }
-  depends_on = [
-    aws_eks_node_group.nodes_general
-  ]
-}
-
-resource "kubernetes_namespace" "prod" {
-  metadata {
-    name = "prod"
-  }
-  depends_on = [
-    aws_eks_node_group.nodes_general
-  ]
-}
-
-resource "kubernetes_namespace" "monitoring" {
-  metadata {
-    name = "monitoring"
-  }
-  depends_on = [
-    aws_eks_node_group.nodes_general
-  ]
-}
-
 # Ajout de l'add-on EBS CSI pour EKS
 resource "aws_eks_addon" "ebs_csi_driver" {
   cluster_name             = aws_eks_cluster.eks.name

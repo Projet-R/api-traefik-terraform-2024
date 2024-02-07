@@ -48,6 +48,34 @@ resource "aws_eks_node_group" "nodes_general" {
   ]
 }
 
+# Création des namespaces
+resource "kubernetes_namespace" "dev" {
+  metadata {
+    name = "dev"
+  }
+  depends_on = [
+    aws_eks_node_group.nodes_general
+  ]
+}
+
+resource "kubernetes_namespace" "prod" {
+  metadata {
+    name = "prod"
+  }
+  depends_on = [
+    aws_eks_node_group.nodes_general
+  ]
+}
+
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+  depends_on = [
+    aws_eks_node_group.nodes_general
+  ]
+}
+
 # Ajout de l'add-on EBS CSI pour EKS
 resource "aws_eks_addon" "ebs_csi_driver" {
   cluster_name             = aws_eks_cluster.eks.name
@@ -68,8 +96,8 @@ data "aws_eks_cluster_auth" "eks" {
   name = aws_eks_cluster.eks.name
 }
 
+
 provider "kubernetes" {
-  load_config_file       = false
   host                   = data.aws_eks_cluster.eks.endpoint
   token                  = data.aws_eks_cluster_auth.eks.token
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
@@ -77,7 +105,6 @@ provider "kubernetes" {
 
 provider "helm" {
   kubernetes {
-    load_config_file       = false
     host                   = data.aws_eks_cluster.eks.endpoint
     token                  = data.aws_eks_cluster_auth.eks.token
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
@@ -112,32 +139,4 @@ resource "helm_release" "alb-controller" {
     name  = "clusterName"
     value = aws_eks_cluster.eks.name
   }
-}
-
-# Création des namespaces
-resource "kubernetes_namespace" "dev" {
-  metadata {
-    name = "dev"
-  }
-  depends_on = [
-    aws_eks_node_group.nodes_general
-  ]
-}
-
-resource "kubernetes_namespace" "prod" {
-  metadata {
-    name = "prod"
-  }
-  depends_on = [
-    aws_eks_node_group.nodes_general
-  ]
-}
-
-resource "kubernetes_namespace" "monitoring" {
-  metadata {
-    name = "monitoring"
-  }
-  depends_on = [
-    aws_eks_node_group.nodes_general
-  ]
 }

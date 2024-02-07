@@ -1,8 +1,13 @@
 # OIDC config
-resource "aws_iam_openid_connect_provider" "cluster" {
+
+data "tls_certificate" "certif_eks" {
+  url = aws_eks_cluster.eks.identity[0].oidc[0].issuer
+}
+
+resource "aws_iam_openid_connect_provider" "oidc_eks" {
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = []
-  url             = aws_eks_cluster.eks.identity.0.oidc.0.issuer
+  thumbprint_list = [data.tls_certificate.certif_eks.certificates[0].sha1_fingerprint]
+  url             = data.tls_certificate.certif_eks.url
 }
 
 # Configuration du rôle IAM pour les nœuds EC2 du cluster EKS
@@ -64,10 +69,15 @@ resource "aws_iam_role" "eks_cluster" {
 POLICY
 }
 
-# Attachement de la politique IAM pour le rôle cluster EKS
-resource "aws_iam_policy_attachment" "eks_cluster_policy" {
-  name       = "eks_cluster_policy"
+resource "aws_iam_policy_attachment" "eks-cluster-policy" {
+  name       = "eks-cluster-policy"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  roles      = [aws_iam_role.eks_cluster.name]
+}
+
+resource "aws_iam_policy_attachment" "eks-clr-acm-ro" {
+  name       = "eks-clr-acm-ro"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
   roles      = [aws_iam_role.eks_cluster.name]
 }
 
@@ -82,13 +92,16 @@ resource "aws_iam_role" "eks_ebs_csi" {
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::203271543287:oidc-provider/oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD"
+        
+        "Federated": "arn:aws:iam::203271543287:oidc-provider/${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
-          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:aud": "sts.amazonaws.com",
-          "oidc.eks.eu-west-3.amazonaws.com/id/3126802414A5F3C98436E6029B3232AD:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+          
+          "${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}:aud": "sts.amazonaws.com",
+          "${replace(aws_iam_openid_connect_provider.oidc_eks.url, "https://", "")}:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+
         }
       }
     }
@@ -104,3 +117,40 @@ resource "aws_iam_policy_attachment" "ebs_csi_controller" {
   roles      = [aws_iam_role.eks_ebs_csi.name]
 }
 
+
+# Creation du role avec la policy necessaire pour ALB
+module "lb_role" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+
+  role_name                              = "role_eks_lb"
+  attach_load_balancer_controller_policy = true
+
+  oidc_providers = {
+    main = {
+      provider_arn               = aws_iam_openid_connect_provider.oidc_eks.arn
+      namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
+    }
+  }
+}
+
+# creation du service account pour ALB
+resource "kubernetes_service_account" "service-account" {
+  metadata {
+    name      = "aws-load-balancer-controller"
+    namespace = "kube-system"
+    labels = {
+      "app.kubernetes.io/name"      = "aws-load-balancer-controller"
+      "app.kubernetes.io/component" = "controller"
+    }
+    annotations = {
+      "eks.amazonaws.com/role-arn"               = module.lb_role.iam_role_arn
+      "eks.amazonaws.com/sts-regional-endpoints" = "true"
+    }
+  }
+}
+
+resource "aws_iam_policy_attachment" "alb-acm-ro" {
+  name       = "alb-acm-ro"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
+  roles      = [module.lb_role.iam_role_name]
+}

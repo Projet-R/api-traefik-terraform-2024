@@ -84,7 +84,20 @@ jobs:
 
      # Generates an execution plan for Terraform
     - name: terraform state list
-      run: terraform state list
+      run: |
+        terraform state rm "data.aws_eks_cluster.eks""
+        terraform state rm "data.aws_eks_cluster_auth.eks"
+        terraform state rm "aws_eks_cluster.eks"
+        terraform state rm "aws_iam_policy_attachment.eks-clr-acm-ro"
+        terraform state rm "aws_iam_policy_attachment.eks-cluster-policy"
+        terraform state rm "aws_iam_role.eks_cluster"
+        terraform state rm "aws_internet_gateway.gw"
+        terraform state rm "aws_subnet.private_1"
+        terraform state rm "aws_subnet.private_2"
+        terraform state rm "aws_subnet.public_1"
+        terraform state rm "aws_subnet.public_2"
+        terraform state rm "aws_vpc.main"
+        terraform state rm "kubernetes_namespace.dev"
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan

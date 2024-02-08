@@ -13,7 +13,7 @@ terraform {
     organization = "Datasciencetest"
 
     workspaces {
-      name = "api-traefik-kub-2024-PROD"
+      name = "api-traefik-kub-2024-DEV"
     }
   }
 }

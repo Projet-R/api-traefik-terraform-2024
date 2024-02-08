@@ -83,11 +83,6 @@ jobs:
       run: terraform fmt -check
 
     # Generates an execution plan for Terraform
-    - name: terraform state list
-      run: |
-        terraform state rm "helm_release.alb-controller"
-
-    # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: terraform plan -input=false
 

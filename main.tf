@@ -1,4 +1,3 @@
-# Configuration du fournisseur AWS dans la région de Paris (eu-west-3)
 terraform {
   required_providers {
     aws = {
@@ -9,16 +8,14 @@ terraform {
       source = "hashicorp/random"
     }
   }
-  backend "remote" {
-    organization = "Datasciencetest"
-
-    workspaces {
-      name = "api-traefik-kub-2024-PROD"
-    }
+  
+  backend "local" {
+    path = "chemin/vers/votre/repertoire/local"
   }
 }
+
 provider "aws" {
-  region = "eu-west-3"
+  region = "eu-west-3"  # Modification de la région AWS pour utiliser Paris (eu-west-3)
 }
 
 data "aws_eks_cluster" "eks" {
